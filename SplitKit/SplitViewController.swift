@@ -545,6 +545,23 @@ open class SplitViewController: UIViewController {
                 firstViewHeightConstraint.constant = 0
             }
             break
+        case .ended:
+	        verticalSeparatorHeightConstraint.constant = 1.0 / UIScreen.main.scale
+	            UIView.animate(withDuration: invertAnimationDuration, delay: 0, options: .curveEaseOut, animations: { [unowned self] in
+	                if snapped == false {
+	                    self.verticalHandle.alpha = 0.0
+	                } else {
+	                    self.verticalSeparatorHair.alpha = 0.0
+	                }
+	                self.verticalSeparatorHair.backgroundColor = self.separatorColor
+	                self.view.layoutIfNeeded()
+	                }, completion: { (completed) in
+	                    self.restoreVerticalRatioConstraint()
+	            })
+	            if invertAnimationDuration == 0.0 {
+	                restoreVerticalRatioConstraint()
+	            }    
+	        break
         default:
             break
         }
