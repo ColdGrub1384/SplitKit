@@ -516,6 +516,7 @@ open class SplitViewController: UIViewController {
                 height = view.bounds.size.height - topLayoutGuide.length - bottomLayoutGuide.length
             }
             firstViewHeightConstraint.constant = height * ratio
+ 
             firstViewHeightConstraint.priority = .defaultHigh
             verticalSeparatorHeightConstraint.constant = 2.0
             UIView.animate(withDuration: draggingAnimationDuration, delay: 0, options: .curveEaseInOut, animations: { [unowned self] in
@@ -546,22 +547,45 @@ open class SplitViewController: UIViewController {
             }
             break
         case .ended:
-	        verticalSeparatorHeightConstraint.constant = 1.0 / UIScreen.main.scale
-	            UIView.animate(withDuration: invertAnimationDuration, delay: 0, options: .curveEaseOut, animations: { [unowned self] in
-	                if snapped == false {
-	                    self.verticalHandle.alpha = 0.0
-	                } else {
-	                    self.verticalSeparatorHair.alpha = 0.0
-	                }
-	                self.verticalSeparatorHair.backgroundColor = self.separatorColor
-	                self.view.layoutIfNeeded()
-	                }, completion: { (completed) in
-	                    self.restoreVerticalRatioConstraint()
-	            })
-	            if invertAnimationDuration == 0.0 {
-	                restoreVerticalRatioConstraint()
-	            }    
-	        break
+            var snapped = false
+            // If we are near a border, just snap to it
+            if #available(iOS 11.0, *) {
+                if firstViewHeightConstraint.constant >= (view.bounds.height - view.safeAreaInsets.top - view.safeAreaInsets.bottom) * 0.95 {
+                    firstViewHeightConstraint.constant = view.bounds.height - view.safeAreaInsets.top - view.safeAreaInsets.bottom
+                    snapped = true
+                    verticalHandle.snapped = .bottom
+                } else if firstViewHeightConstraint.constant <= (view.bounds.height - view.safeAreaInsets.top - view.safeAreaInsets.bottom) * 0.05 {
+                    firstViewHeightConstraint.constant = 0
+                    snapped = true
+                    verticalHandle.snapped = .top
+                }
+            } else {
+                if firstViewHeightConstraint.constant >= (view.bounds.height - topLayoutGuide.length - bottomLayoutGuide.length) * 0.95 {
+                    firstViewHeightConstraint.constant = view.bounds.height - topLayoutGuide.length - bottomLayoutGuide.length
+                    snapped = true
+                    verticalHandle.snapped = .bottom
+                } else if firstViewHeightConstraint.constant <= (view.bounds.height - topLayoutGuide.length - bottomLayoutGuide.length) * 0.05 {
+                    firstViewHeightConstraint.constant = 0
+                    snapped = true
+                    verticalHandle.snapped = .top
+                }
+            }
+            verticalSeparatorHeightConstraint.constant = 1.0 / UIScreen.main.scale
+            UIView.animate(withDuration: invertAnimationDuration, delay: 0, options: .curveEaseOut, animations: { [unowned self] in
+                if snapped == false {
+                    self.verticalHandle.alpha = 0.0
+                } else {
+                    self.verticalSeparatorHair.alpha = 0.0
+                }
+                self.verticalSeparatorHair.backgroundColor = self.separatorColor
+                self.view.layoutIfNeeded()
+                }, completion: { (completed) in
+                    //self.restoreVerticalRatioConstraint()
+            })
+            /*if invertAnimationDuration == 0.0 {
+                restoreVerticalRatioConstraint()
+            }*/
+            break
         default:
             break
         }
