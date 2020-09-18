@@ -186,7 +186,7 @@ open class SplitViewController: UIViewController {
 
         firstContainerView.frame = view.bounds
         firstContainerView.accessibilityIdentifier = "FirstContainerView"
-        firstContainerView.backgroundColor = .white
+        firstContainerView.backgroundColor = .systemBackground
         firstContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(firstContainerView)
         if #available(iOS 11.0, *) {
@@ -222,7 +222,7 @@ open class SplitViewController: UIViewController {
         
         secondContainerView.frame = view.bounds
         secondContainerView.accessibilityIdentifier = "SecondContainerView"
-        secondContainerView.backgroundColor = .white
+        secondContainerView.backgroundColor = .systemBackground
         secondContainerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(secondContainerView)
         
