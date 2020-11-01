@@ -346,6 +346,11 @@ open class SplitViewController: UIViewController {
         firstViewHeightRatioConstraint?.priority = .defaultHigh
         firstViewHeightRatioConstraint?.isActive = false
         view.addConstraint(firstViewHeightRatioConstraint!)
+        
+        if #available(iOS 13.4, *) {
+            verticalSeparatorView.addInteraction(UIPointerInteraction(delegate: self))
+            horizontalSeparatorView.addInteraction(UIPointerInteraction(delegate: self))
+        }
     }
     
     fileprivate var didAppearFirstRound = false
@@ -375,7 +380,6 @@ open class SplitViewController: UIViewController {
         let _ = self.view.frame.size.height - self.view.convert(initialRect!, from: nil).origin.y
         let keyboardRect = ((notification as NSNotification).userInfo![UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue
         let newHeight = self.view.frame.size.height - self.view.convert(keyboardRect!, from: nil).origin.y
-        
         self.bottomKeyboardHeight = newHeight
     }
     
@@ -651,3 +655,28 @@ open class SplitViewController: UIViewController {
         }
     }
 }
+
+@available(iOS 13.4, *)
+extension SplitViewController: UIPointerInteractionDelegate {
+    
+    public func pointerInteraction(_ interaction: UIPointerInteraction, willEnter region: UIPointerRegion, animator: UIPointerInteractionAnimating) {
+        
+        animator.addAnimations {
+            self.horizontalSeparatorHair.backgroundColor = self.separatorSelectedColor
+            self.verticalSeparatorHair.backgroundColor = self.separatorSelectedColor
+        }
+    }
+    
+    public func pointerInteraction(_ interaction: UIPointerInteraction, willExit region: UIPointerRegion, animator: UIPointerInteractionAnimating) {
+        
+        animator.addAnimations {
+            self.horizontalSeparatorHair.backgroundColor = self.separatorColor
+            self.verticalSeparatorHair.backgroundColor = self.separatorColor
+        }
+    }
+    
+    public func pointerInteraction(_ interaction: UIPointerInteraction, styleFor region: UIPointerRegion) -> UIPointerStyle? {
+        return UIPointerStyle(shape: .path(UIBezierPath()))
+    }
+}
+
