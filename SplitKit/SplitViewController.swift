@@ -158,10 +158,10 @@ open class SplitViewController: UIViewController {
     private var firstViewLeadingConstraint : NSLayoutConstraint!
     private var firstViewTrailingConstraint : NSLayoutConstraint!
     private var firstViewWidthConstraint : NSLayoutConstraint!
-    private var firstViewHeightConstraint : NSLayoutConstraint!
+    public var firstViewHeightConstraint : NSLayoutConstraint!
     
     private var firstViewWidthRatioConstraint : NSLayoutConstraint?
-    private var firstViewHeightRatioConstraint : NSLayoutConstraint?
+    public var firstViewHeightRatioConstraint : NSLayoutConstraint?
     
     private var secondViewTopConstraint : NSLayoutConstraint!
     private var secondViewBottomConstraint : NSLayoutConstraint!
@@ -346,11 +346,6 @@ open class SplitViewController: UIViewController {
         firstViewHeightRatioConstraint?.priority = .defaultHigh
         firstViewHeightRatioConstraint?.isActive = false
         view.addConstraint(firstViewHeightRatioConstraint!)
-        
-        if #available(iOS 13.4, *) {
-            verticalSeparatorView.addInteraction(UIPointerInteraction(delegate: self))
-            horizontalSeparatorView.addInteraction(UIPointerInteraction(delegate: self))
-        }
     }
     
     fileprivate var didAppearFirstRound = false
@@ -380,7 +375,12 @@ open class SplitViewController: UIViewController {
         let _ = self.view.frame.size.height - self.view.convert(initialRect!, from: nil).origin.y
         let keyboardRect = ((notification as NSNotification).userInfo![UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue
         let newHeight = self.view.frame.size.height - self.view.convert(keyboardRect!, from: nil).origin.y
+        
         self.bottomKeyboardHeight = newHeight
+        
+        DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+            
+        }
     }
     
     open override func viewDidDisappear(_ animated: Bool) {
@@ -501,7 +501,7 @@ open class SplitViewController: UIViewController {
         self.view.addConstraint(self.firstViewWidthRatioConstraint!)
     }
     
-    @IBAction private func verticalPanGestureDidPan(_ sender: UIPanGestureRecognizer) {
+    @IBAction public func verticalPanGestureDidPan(_ sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .began:
             guard let senderView = sender.view else { break }
@@ -655,28 +655,3 @@ open class SplitViewController: UIViewController {
         }
     }
 }
-
-@available(iOS 13.4, *)
-extension SplitViewController: UIPointerInteractionDelegate {
-    
-    public func pointerInteraction(_ interaction: UIPointerInteraction, willEnter region: UIPointerRegion, animator: UIPointerInteractionAnimating) {
-        
-        animator.addAnimations {
-            self.horizontalSeparatorHair.backgroundColor = self.separatorSelectedColor
-            self.verticalSeparatorHair.backgroundColor = self.separatorSelectedColor
-        }
-    }
-    
-    public func pointerInteraction(_ interaction: UIPointerInteraction, willExit region: UIPointerRegion, animator: UIPointerInteractionAnimating) {
-        
-        animator.addAnimations {
-            self.horizontalSeparatorHair.backgroundColor = self.separatorColor
-            self.verticalSeparatorHair.backgroundColor = self.separatorColor
-        }
-    }
-    
-    public func pointerInteraction(_ interaction: UIPointerInteraction, styleFor region: UIPointerRegion) -> UIPointerStyle? {
-        return UIPointerStyle(shape: .path(UIBezierPath()))
-    }
-}
-
