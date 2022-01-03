@@ -631,7 +631,10 @@ open class SplitViewController: UIViewController {
             } else {
                 newWidth = size.width * currentRatio
             }
-            self.firstViewWidthConstraint.constant = newWidth
+            
+            if newWidth.isFinite {
+                self.firstViewWidthConstraint.constant = newWidth
+            }
         }) { (context) in
             
         }
