@@ -157,10 +157,10 @@ open class SplitViewController: UIViewController {
     private var firstViewBottomConstraint : NSLayoutConstraint!
     private var firstViewLeadingConstraint : NSLayoutConstraint!
     private var firstViewTrailingConstraint : NSLayoutConstraint!
-    private var firstViewWidthConstraint : NSLayoutConstraint!
+    public var firstViewWidthConstraint : NSLayoutConstraint!
     public var firstViewHeightConstraint : NSLayoutConstraint!
     
-    private var firstViewWidthRatioConstraint : NSLayoutConstraint?
+    public var firstViewWidthRatioConstraint : NSLayoutConstraint?
     public var firstViewHeightRatioConstraint : NSLayoutConstraint?
     
     private var secondViewTopConstraint : NSLayoutConstraint!
@@ -377,10 +377,6 @@ open class SplitViewController: UIViewController {
         let newHeight = self.view.frame.size.height - self.view.convert(keyboardRect!, from: nil).origin.y
         
         self.bottomKeyboardHeight = newHeight
-        
-        DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
-            
-        }
     }
     
     open override func viewDidDisappear(_ animated: Bool) {
@@ -501,7 +497,7 @@ open class SplitViewController: UIViewController {
         self.view.addConstraint(self.firstViewWidthRatioConstraint!)
     }
     
-    @IBAction public func verticalPanGestureDidPan(_ sender: UIPanGestureRecognizer) {
+    @IBAction private func verticalPanGestureDidPan(_ sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .began:
             guard let senderView = sender.view else { break }
@@ -631,10 +627,7 @@ open class SplitViewController: UIViewController {
             } else {
                 newWidth = size.width * currentRatio
             }
-            
-            if newWidth.isFinite {
-                self.firstViewWidthConstraint.constant = newWidth
-            }
+            self.firstViewWidthConstraint.constant = newWidth
         }) { (context) in
             
         }
